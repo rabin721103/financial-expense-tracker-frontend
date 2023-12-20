@@ -1,0 +1,30 @@
+.top-container {
+  display: flex;
+  width: 100%;
+}
+.card-a {
+  margin: 7px;
+  display: flex;
+  padding: 7px;
+  width: 110px;
+  border: 1px solid #32135e;
+  color: black;
+  align-items: center;
+  transition: transform 0.2s;
+}
+.card-a i:first-child {
+  font-size: 10px;
+  position: absolute;
+  right: -4px;
+  background-color: rgb(34, 18, 18);
+  padding: 4px;
+  color: white;
+  top: -7px;
+  border-radius: 50%;
+}
+.card-a:hover {
+  background-color: #230c424f;
+  border: none;
+  transform: scale(0.95);
+  cursor: pointer;
+}
