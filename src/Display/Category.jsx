@@ -1,7 +1,54 @@
 import { Link } from "react-router-dom";
 import "./Category.css";
+import { useState } from "react";
+import axiosInstance from "../../axiosInstance";
+import { emitSuccessToast } from "../site/Toastify/ToastEmitter";
 
 function Category() {
+  const [expensecategory, setExpenseCategory] = useState(false);
+  const [incomecategory, setIncomeCategory] = useState(false);
+
+  // Expense form state
+  const [expenseCategoryName, setExpenseCategoryName] = useState("");
+  const [expenseLimit, setExpenseLimit] = useState("");
+
+  // Income form state
+  const [incomeCategoryName, setIncomeCategoryName] = useState("");
+
+  const expenseHandler = () => {
+    setExpenseCategory(true);
+    setIncomeCategory(false);
+  };
+
+  const incomeHandler = () => {
+    setIncomeCategory(true);
+    setExpenseCategory(false);
+  };
+  const handleAddCategory = async () => {
+    try {
+      if (expensecategory) {
+        // Handle expense category form data
+        const response = await axiosInstance.post("/expenses/category", {
+          name: expenseCategoryName,
+          expenseLimit,
+        });
+        emitSuccessToast(response?.data?.message);
+        console.log(response?.data?.message);
+        // console.log("Expense category added successfully:", response.data);
+      } else if (incomecategory) {
+        // Handle income category form data
+        const response = await axiosInstance.post("/incomes/category", {
+          categoryName: incomeCategoryName,
+        });
+        emitSuccessToast(response?.data?.message);
+
+        console.log("Income category added successfully:", response.data);
+      }
+    } catch (error) {
+      console.error("Error adding category:", error.message);
+    }
+  };
+
   return (
     <div className="container">
       <Link to="/frontpage">
@@ -13,28 +60,86 @@ function Category() {
         <div className="col-4 ">
           <form className="p-3 shadow  my-5 bg-body rounded">
             <h3 style={{ textAlign: "center" }}>Category</h3>
-            <div className="form-floating mb-3 mt-3">
-              <input
-                type="text"
-                className="form-control"
-                id="floatingInput"
-                placeholder="Title"
-              />
-              <label htmlFor="floatingInput">Title</label>
+            <div style={{ display: "flex", justifyContent: "space-evenly" }}>
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="flexRadioDefault"
+                  id="flexRadioDefault1"
+                  onClick={expenseHandler}
+                />
+                <label className="form-check-label" htmlFor="flexRadioDefault1">
+                  Expense
+                </label>
+              </div>
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="flexRadioDefault"
+                  id="flexRadioDefault2"
+                  onClick={incomeHandler}
+                />
+                <label className="form-check-label" htmlFor="flexRadioDefault2">
+                  Income
+                </label>
+              </div>
             </div>
-            <div className="form-floating mb-3 mt-3">
-              <input
-                type="text"
-                className="form-control"
-                id="floatingInput"
-                placeholder="Title"
-              />
-              <label htmlFor="floatingInput">Category Name</label>
-            </div>
+            {expensecategory && (
+              <div>
+                <div className="form-floating mb-3 mt-3">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Title"
+                    value={expenseCategoryName}
+                    onChange={(e) => setExpenseCategoryName(e.target.value)}
+                  />
+                  <label htmlFor="floatingInput">Category Name</label>
+                </div>
+                <div className="form-floating mb-3 mt-3">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Title"
+                    value={expenseLimit}
+                    onChange={(e) => setExpenseLimit(e.target.value)}
+                  />
+                  <label htmlFor="floatingInput">Set Expense Limit</label>
+                </div>
 
-            <button type="button" className="btn btn-primary">
-              Add
-            </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleAddCategory}
+                >
+                  Add
+                </button>
+              </div>
+            )}
+            {incomecategory && (
+              <div>
+                <div className="form-floating mb-3 mt-3">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Title"
+                    value={incomeCategoryName}
+                    onChange={(e) => setIncomeCategoryName(e.target.value)}
+                  />
+                  <label htmlFor="floatingInput">Category Name</label>
+                </div>
+
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleAddCategory}
+                >
+                  Add
+                </button>
+              </div>
+            )}
           </form>
         </div>
         <div
@@ -42,20 +147,25 @@ function Category() {
           style={{ alignContent: "center", height: "70vh" }}
         >
           <h3 style={{ margin: "5px" }}>Category List</h3>
-          <div className="top-container">
-            <div className="card-a ">
-              <i className="fa-solid fa-xmark"></i>
-              <p>Salary</p>
-            </div>
-            <div className="card-a">
-              <i className="fa-sharp fa-solid fa-xmark "></i>
-              <p>Commission</p>
-            </div>
-            <div className="card-a">
-              <i className="fa-solid fa-xmark fa-beat"></i>
-              <p>Bonus</p>
-            </div>
-          </div>
+          <table className="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Category Name</th>
+                <th scope="col">Type</th>
+                {/* Add more columns as needed */}
+              </tr>
+            </thead>
+            <tbody>
+              {/* Example row, replace with dynamic data */}
+              <tr>
+                <th scope="row">1</th>
+                <td>Salary</td>
+                <td>Income</td>
+              </tr>
+              {/* Map through your category data to generate rows */}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

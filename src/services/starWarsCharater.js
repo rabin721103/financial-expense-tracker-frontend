@@ -12,7 +12,3 @@ export const getStarWarsCharacterById = async (id) => {
 export const addStarWarsCharacter = async (data) => {
   return axiosInstance.post(`/people`, data);
 };
-
-export const updateStarWarsCharacter = async (id, data) => {
-  return axiosInstance.put(`/people/${id}`, data);
-};

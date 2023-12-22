@@ -42,6 +42,15 @@ function Expense() {
                 <label htmlFor="floatingInput">Expense Amount</label>
               </div>
               <div className="form-floating mb-3">
+                <input
+                  type="date"
+                  className="form-control"
+                  id="floatingInput"
+                  placeholder="Amount"
+                />
+                <label htmlFor="floatingInput">Date</label>
+              </div>
+              <div className="form-floating mb-3">
                 <select
                   className="form-select"
                   id="floatingSelect"

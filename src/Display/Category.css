@@ -1,9 +1,9 @@
-.top-container {
+.top-container-a {
   display: flex;
   width: 100%;
 }
 .card-a {
-  margin: 7px;
+  margin: 14px;
   display: flex;
   padding: 7px;
   width: 110px;

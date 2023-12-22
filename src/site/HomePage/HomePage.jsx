@@ -1,7 +1,5 @@
-import Sidebar from "../components/Sidebar";
-
 const HomePage = () => {
-  return;
+  return <div>Welcome to home page of your financial tracker</div>;
 };
 
 export default HomePage;

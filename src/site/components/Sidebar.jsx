@@ -38,6 +38,7 @@ function Sidebar() {
               <i className="fa fa-cogs"></i>Category
             </Link>
           </li>
+
           <li>
             <Link href="#">
               <i className="far fa-envelope"></i>Contact
