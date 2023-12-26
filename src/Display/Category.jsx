@@ -1,12 +1,14 @@
 import { Link } from "react-router-dom";
 import "./Category.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axiosInstance from "../../axiosInstance";
 import { emitSuccessToast } from "../site/Toastify/ToastEmitter";
 
 function Category() {
   const [expensecategory, setExpenseCategory] = useState(false);
   const [incomecategory, setIncomeCategory] = useState(false);
+  const [expenseCategories, setExpenseCategories] = useState([]);
+  const [incomeCategories, setIncomeCategories] = useState([]);
 
   // Expense form state
   const [expenseCategoryName, setExpenseCategoryName] = useState("");
@@ -48,6 +50,20 @@ function Category() {
       console.error("Error adding category:", error.message);
     }
   };
+  const fetchData = async () => {
+    try {
+      const expenseResponse = await axiosInstance.get("/expenses/category");
+      setExpenseCategories(expenseResponse?.data?.response);
+
+      const incomeResponse = await axiosInstance.get("/incomes/category");
+      setIncomeCategories(incomeResponse?.data?.response);
+    } catch (error) {
+      console.error("Error fetching categories:", error.message);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <div className="container">
@@ -143,27 +159,52 @@ function Category() {
           </form>
         </div>
         <div
-          className="col-8 shadow-lg p-3 my-5 bg-body rounded"
-          style={{ alignContent: "center", height: "70vh" }}
+          className="col-6 shadow-lg p-3 my-5 bg-body rounded"
+          style={{ alignContent: "center", height: "35vh" }}
         >
-          <h3 style={{ margin: "5px" }}>Category List</h3>
+          <h3 style={{ margin: "5px" }}>Expense Category List</h3>
           <table className="table">
             <thead>
               <tr>
                 <th scope="col">#</th>
                 <th scope="col">Category Name</th>
-                <th scope="col">Type</th>
+                <th scope="col">Expense Limit</th>
                 {/* Add more columns as needed */}
               </tr>
             </thead>
             <tbody>
-              {/* Example row, replace with dynamic data */}
+              {expenseCategories?.map((category, index) => (
+                <tr key={index}>
+                  <th scope="row">{index + 1}</th>
+                  <td>{category.name}</td>
+                  <td>{category.expenseLimit}</td>
+                  {/* Add more columns as needed */}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div
+          className="col-6 shadow-lg p-3 my-5 bg-body rounded"
+          style={{ alignContent: "center", height: "35vh" }}
+        >
+          <h3 style={{ margin: "5px" }}>Income Category List</h3>
+          <table className="table">
+            <thead>
               <tr>
-                <th scope="row">1</th>
-                <td>Salary</td>
-                <td>Income</td>
+                <th scope="col">#</th>
+                <th scope="col">Category Name</th>
+                {/* Add more columns as needed */}
               </tr>
-              {/* Map through your category data to generate rows */}
+            </thead>
+            <tbody>
+              {incomeCategories.map((category, index) => (
+                <tr key={index}>
+                  <th scope="row">{index + 1}</th>
+                  <td>{category.categoryName}</td>
+                  {/* Add more columns as needed */}
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

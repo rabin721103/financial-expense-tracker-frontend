@@ -10,7 +10,7 @@ const Login = () => {
 
   const getProfile = async () => {
     try {
-      const response = await axiosInstance.get("/auth/profile");
+      const response = await axiosInstance.get("/user/profile");
       localStorage.setItem("user", JSON.stringify(response?.data ?? ""));
     } catch (error) {
       console.log(error);
@@ -18,7 +18,7 @@ const Login = () => {
   };
   const handleClick = async () => {
     try {
-      const response = await axiosInstance.post("/auth/user/login", {
+      const response = await axiosInstance.post("/auth/login", {
         userName: userName.trim(),
         password: password.trim(),
       });

@@ -1,6 +1,57 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axiosInstance from "../../axiosInstance";
+import {
+  emitErrorToast,
+  emitSuccessToast,
+} from "../site/Toastify/ToastEmitter";
 
 function Income() {
+  const initial = {
+    description: "",
+    incomeAmount: "",
+    incomeCategoryId: "",
+    incomeName: "",
+  };
+
+  const [form, setForm] = useState(initial);
+
+  const [incomeCategories, setIncomeCategories] = useState([]);
+  const [incomes, setIncomes] = useState([]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async () => {
+    const response = form?.incomeId
+      ? await axiosInstance.put(`/incomes/${form?.incomeId}`, form)
+      : await axiosInstance.post("/incomes", form);
+    if (response?.data?.success) {
+      setForm(initial);
+      emitSuccessToast(response?.data?.message);
+    } else {
+      emitErrorToast(response?.data?.message);
+    }
+  };
+
+  const getCategories = async () => {
+    const incomeResponse = await axiosInstance.get("/incomes/category");
+    setIncomeCategories(incomeResponse?.data?.response);
+  };
+  const getIncomes = async () => {
+    const incomesResponse = await axiosInstance.get("/incomes/allIncomes"); // Adjust the API endpoint accordingly
+    setIncomes(incomesResponse?.data?.response);
+  };
+
+  console.log(form);
+
+  useEffect(() => {
+    getCategories();
+    getIncomes();
+  }, []);
+
   return (
     <>
       <div className="container">
@@ -29,6 +80,9 @@ function Income() {
                   className="form-control"
                   id="floatingInput"
                   placeholder="Title"
+                  name="incomeName"
+                  value={form.incomeName}
+                  onChange={handleChange}
                 />
                 <label htmlFor="floatingInput">Income Title</label>
               </div>
@@ -38,6 +92,9 @@ function Income() {
                   className="form-control"
                   id="floatingInput"
                   placeholder="Amount"
+                  name="incomeAmount"
+                  value={form.incomeAmount}
+                  onChange={handleChange}
                 />
                 <label htmlFor="floatingInput">Income Amount</label>
               </div>
@@ -46,11 +103,18 @@ function Income() {
                   className="form-select"
                   id="floatingSelect"
                   aria-label="Floating label select example"
+                  name="incomeCategoryId"
+                  value={form.incomeCategoryId}
+                  onChange={handleChange}
                 >
-                  <option disabled>Choose Category</option>
-                  <option value="1">Salary</option>
-                  <option value="2">House Rent</option>
-                  <option value="3">Others</option>
+                  <option disabled value="">
+                    Select One
+                  </option>
+                  {incomeCategories?.map((cat, idx) => (
+                    <option key={idx} value={cat?.incomeCategoryId}>
+                      {cat?.categoryName}
+                    </option>
+                  ))}
                 </select>
                 <label htmlFor="floatingInput">Income Category</label>
               </div>
@@ -58,10 +122,17 @@ function Income() {
                 <textarea
                   className="form-control"
                   id="floatingTextarea"
+                  name="description"
+                  value={form.description}
+                  onChange={handleChange}
                 ></textarea>
                 <label htmlFor="floatingTextarea">Description</label>
               </div>
-              <button type="button" className="btn btn-primary">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleSubmit}
+              >
                 Add Income
               </button>
             </form>
@@ -71,44 +142,36 @@ function Income() {
             style={{ alignContent: "center", height: "70vh" }}
           >
             <h3 style={{ margin: "5px" }}>Income List</h3>
-            <div
-              className="card shadow-lg my-2 bg-body rounded"
-              style={{ width: "100%" }}
-            >
+            {incomes?.map((income, index) => (
               <div
-                className="card-body"
-                style={{ display: "flex", justifyContent: "space-between" }}
+                key={index}
+                className="card shadow-lg my-2 bg-body rounded"
+                style={{ width: "100%" }}
               >
-                <h5 className="card-title">Income title 1</h5>
-                <p className="card-text">Income Category</p>
+                <div
+                  className="card-body"
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <h5 className="card-title">{income?.incomeName}</h5>
+                  <p className="card-text">{income?.incomeCategoryName}</p>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => setForm(income)}
+                  >
+                    Edit
+                  </button>
+                </div>
+                <div
+                  className="card-body"
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <p className="card-text">{income?.description}</p>
+                  <h5 className="card-title">{income?.incomeAmount}</h5>
+
+                  <button className="btn btn-danger">Delete</button>
+                </div>
               </div>
-              <div
-                className="card-body"
-                style={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <p className="card-text">Description 1</p>
-                <h5 className="card-title">Amount 1</h5>
-              </div>
-            </div>
-            <div
-              className="card shadow-lg my-2 bg-body rounded"
-              style={{ width: "100%" }}
-            >
-              <div
-                className="card-body"
-                style={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <h5 className="card-title">Income title 2</h5>
-                <p className="card-text">Income Category 2</p>
-              </div>
-              <div
-                className="card-body"
-                style={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <p className="card-text">Description 2</p>
-                <h5 className="card-title">Amount 2</h5>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>

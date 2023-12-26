@@ -18,9 +18,9 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axiosInstance.post("/user/register", formData);
+      const response = await axiosInstance.post("/auth/register", formData);
       console.log(response?.data?.message);
-      navigate("/Login");
+      navigate("/login");
     } catch (error) {
       console.error("Registration failed", error);
       // Handle error, show a message to the user, etc.

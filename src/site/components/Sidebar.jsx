@@ -10,7 +10,7 @@ function Sidebar() {
         <i className="fas fa-bars" id="btn"></i>
         <i className="fas fa-times" id="cancel"></i>
       </Label>
-      <div className="sidebar">
+      <div className="sidebar z-3">
         <header>Finance Tracker</header>
         <ul>
           <li>

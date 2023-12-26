@@ -1,6 +1,49 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axiosInstance from "../../axiosInstance";
+import {
+  emitErrorToast,
+  emitSuccessToast,
+} from "../site/Toastify/ToastEmitter";
 
 function Expense() {
+  const [form, setForm] = useState({
+    description: "",
+    expenseAmount: "",
+    expenseCategoryId: "",
+    expenseName: "",
+  });
+  const [expenseCategories, setExpenseCategories] = useState([]);
+  const [expenses, setExpenses] = useState([]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async () => {
+    const response = await axiosInstance.post("/expenses", form);
+    console.log(response);
+    if (response?.data?.success) {
+      emitSuccessToast(response?.data?.message);
+    } else {
+      emitErrorToast(response?.data?.message);
+    }
+  };
+
+  const getCategories = async () => {
+    const expenseResponse = await axiosInstance.get("/expenses/category");
+    setExpenseCategories(expenseResponse?.data?.response);
+  };
+  const getExpenses = async () => {
+    const expensesResponse = await axiosInstance.get("/expenses/allExpenses"); // Adjust the API endpoint accordingly
+    setExpenses(expensesResponse?.data?.response);
+  };
+
+  useEffect(() => {
+    getCategories();
+    getExpenses();
+  }, []);
   return (
     <>
       <div className="container">
@@ -16,7 +59,7 @@ function Expense() {
           >
             <i className="fa fa-sack-dollar fa-flip"></i>
             Current Balance:
-            <h5>Rs. 2,00,000</h5>
+            <h5>Rs. 2,13,000</h5>
           </button>
         </div>
         <div className="row">
@@ -29,6 +72,9 @@ function Expense() {
                   className="form-control"
                   id="floatingInput"
                   placeholder="Title"
+                  name="expenseName"
+                  value={form.expenseName}
+                  onChange={handleChange}
                 />
                 <label htmlFor="floatingInput">Expense Title</label>
               </div>
@@ -38,10 +84,13 @@ function Expense() {
                   className="form-control"
                   id="floatingInput"
                   placeholder="Amount"
+                  name="expenseAmount"
+                  value={form.expenseAmount}
+                  onChange={handleChange}
                 />
                 <label htmlFor="floatingInput">Expense Amount</label>
               </div>
-              <div className="form-floating mb-3">
+              {/* <div className="form-floating mb-3">
                 <input
                   type="date"
                   className="form-control"
@@ -49,16 +98,24 @@ function Expense() {
                   placeholder="Amount"
                 />
                 <label htmlFor="floatingInput">Date</label>
-              </div>
+              </div> */}
               <div className="form-floating mb-3">
                 <select
                   className="form-select"
                   id="floatingSelect"
                   aria-label="Floating label select example"
+                  name="expenseCategoryId"
+                  value={form.expenseCategoryId}
+                  onChange={handleChange}
                 >
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
+                  <option disabled value="">
+                    Select One
+                  </option>
+                  {expenseCategories?.map((cat, idx) => (
+                    <option key={idx} value={cat?.expenseCategoryId}>
+                      {cat?.name}
+                    </option>
+                  ))}
                 </select>
                 <label htmlFor="floatingInput">Expense Category</label>
               </div>
@@ -66,10 +123,17 @@ function Expense() {
                 <textarea
                   className="form-control"
                   id="floatingTextarea"
+                  name="description"
+                  value={form.description}
+                  onChange={handleChange}
                 ></textarea>
                 <label htmlFor="floatingTextarea">Description</label>
               </div>
-              <button type="button" className="btn btn-primary">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleSubmit}
+              >
                 Add Expense
               </button>
             </form>
@@ -79,44 +143,28 @@ function Expense() {
             style={{ alignContent: "center", height: "70vh" }}
           >
             <h3 style={{ margin: "5px" }}>Expense List</h3>
-            <div
-              className="card shadow-lg my-2 bg-body rounded"
-              style={{ width: "100%" }}
-            >
+            {expenses.map((expense, index) => (
               <div
-                className="card-body"
-                style={{ display: "flex", justifyContent: "space-between" }}
+                key={index}
+                className="card shadow-lg my-2 bg-body rounded"
+                style={{ width: "100%" }}
               >
-                <h5 className="card-title">Expense title 1</h5>
-                <p className="card-text">Expense Category</p>
+                <div
+                  className="card-body"
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <h5 className="card-title">{expense?.expenseName}</h5>
+                  <p className="card-text">{expense?.expenseCategoryName}</p>
+                </div>
+                <div
+                  className="card-body"
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <p className="card-text">{expense?.description}</p>
+                  <h5 className="card-title">{expense?.expenseAmount}</h5>
+                </div>
               </div>
-              <div
-                className="card-body"
-                style={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <p className="card-text">Description 1</p>
-                <h5 className="card-title">Amount 1</h5>
-              </div>
-            </div>
-            <div
-              className="card shadow-lg my-2 bg-body rounded"
-              style={{ width: "100%" }}
-            >
-              <div
-                className="card-body"
-                style={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <h5 className="card-title">Expense title 2</h5>
-                <p className="card-text">Expense Category 2</p>
-              </div>
-              <div
-                className="card-body"
-                style={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <p className="card-text">Description 2</p>
-                <h5 className="card-title">Amount 2</h5>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
