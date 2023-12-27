@@ -7,12 +7,13 @@ import {
 } from "../site/Toastify/ToastEmitter";
 
 function Expense() {
-  const [form, setForm] = useState({
+  const initial = {
     description: "",
     expenseAmount: "",
     expenseCategoryId: "",
     expenseName: "",
-  });
+  };
+  const [form, setForm] = useState(initial);
   const [expenseCategories, setExpenseCategories] = useState([]);
   const [expenses, setExpenses] = useState([]);
 
@@ -22,12 +23,28 @@ function Expense() {
   };
 
   const handleSubmit = async () => {
-    const response = await axiosInstance.post("/expenses", form);
-    console.log(response);
-    if (response?.data?.success) {
-      emitSuccessToast(response?.data?.message);
-    } else {
-      emitErrorToast(response?.data?.message);
+    try {
+      const response = form?.expenseId
+        ? await axiosInstance.put(`/expenses/${form?.expenseId}`, form)
+        : await axiosInstance.post("/expenses", form);
+
+      if (response?.data?.response) {
+        const others = expenses?.filter(
+          (expense) => expense?.expenseId !== form?.expenseId
+        );
+        const newData = response?.data?.response;
+
+        others.unshift(newData);
+        setExpenses(others);
+
+        setForm(initial);
+        emitSuccessToast(response?.data?.message);
+      } else {
+        console.log(response);
+        emitErrorToast(response?.data?.message);
+      }
+    } catch (error) {
+      emitErrorToast(error?.response?.data?.message);
     }
   };
 
@@ -36,7 +53,7 @@ function Expense() {
     setExpenseCategories(expenseResponse?.data?.response);
   };
   const getExpenses = async () => {
-    const expensesResponse = await axiosInstance.get("/expenses/allExpenses"); // Adjust the API endpoint accordingly
+    const expensesResponse = await axiosInstance.get("/expenses/allExpenses");
     setExpenses(expensesResponse?.data?.response);
   };
 
@@ -134,12 +151,12 @@ function Expense() {
                 className="btn btn-primary"
                 onClick={handleSubmit}
               >
-                Add Expense
+                {form?.expenseId ? "Update Expense" : "Add Expense"}
               </button>
             </form>
           </div>
           <div
-            className="col-8 shadow-lg p-3 my-5 bg-body rounded"
+            className="col-8 shadow-lg p-3 my-5 bg-body rounded overflow-hidden overflow-scroll "
             style={{ alignContent: "center", height: "70vh" }}
           >
             <h3 style={{ margin: "5px" }}>Expense List</h3>
@@ -155,13 +172,22 @@ function Expense() {
                 >
                   <h5 className="card-title">{expense?.expenseName}</h5>
                   <p className="card-text">{expense?.expenseCategoryName}</p>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => setForm(expense)}
+                  >
+                    Edit
+                  </button>
                 </div>
                 <div
                   className="card-body"
                   style={{ display: "flex", justifyContent: "space-between" }}
                 >
                   <p className="card-text">{expense?.description}</p>
-                  <h5 className="card-title">{expense?.expenseAmount}</h5>
+                  <h5 className="card-title">Rs. {expense?.expenseAmount}</h5>
+                  <button className="btn btn-danger" disabled>
+                    Delete
+                  </button>
                 </div>
               </div>
             ))}

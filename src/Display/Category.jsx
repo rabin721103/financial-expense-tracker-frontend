@@ -159,14 +159,14 @@ function Category() {
           </form>
         </div>
         <div
-          className="col-6 shadow-lg p-3 my-5 bg-body rounded"
+          className="col-6 shadow-lg p-3 my-5 bg-body rounded overflow-hidden overflow-scroll "
           style={{ alignContent: "center", height: "35vh" }}
         >
           <h3 style={{ margin: "5px" }}>Expense Category List</h3>
           <table className="table">
             <thead>
               <tr>
-                <th scope="col">#</th>
+                <th scope="col">Id</th>
                 <th scope="col">Category Name</th>
                 <th scope="col">Expense Limit</th>
                 {/* Add more columns as needed */}
@@ -185,14 +185,14 @@ function Category() {
           </table>
         </div>
         <div
-          className="col-6 shadow-lg p-3 my-5 bg-body rounded"
+          className="col-6 shadow-lg p-3 my-5 bg-body rounded overflow-hidden overflow-scroll "
           style={{ alignContent: "center", height: "35vh" }}
         >
           <h3 style={{ margin: "5px" }}>Income Category List</h3>
           <table className="table">
             <thead>
               <tr>
-                <th scope="col">#</th>
+                <th scope="col">Id</th>
                 <th scope="col">Category Name</th>
                 {/* Add more columns as needed */}
               </tr>

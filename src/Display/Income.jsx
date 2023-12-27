@@ -29,6 +29,14 @@ function Income() {
       ? await axiosInstance.put(`/incomes/${form?.incomeId}`, form)
       : await axiosInstance.post("/incomes", form);
     if (response?.data?.success) {
+      const others = incomes?.filter(
+        (income) => income?.incomeId !== form?.incomeId
+      );
+      const newData = response?.data?.response;
+
+      others.unshift(newData);
+      setIncomes(others);
+
       setForm(initial);
       emitSuccessToast(response?.data?.message);
     } else {
@@ -44,8 +52,6 @@ function Income() {
     const incomesResponse = await axiosInstance.get("/incomes/allIncomes"); // Adjust the API endpoint accordingly
     setIncomes(incomesResponse?.data?.response);
   };
-
-  console.log(form);
 
   useEffect(() => {
     getCategories();
@@ -133,12 +139,12 @@ function Income() {
                 className="btn btn-primary"
                 onClick={handleSubmit}
               >
-                Add Income
+                {form?.incomeId ? "Update Income" : "Add Income"}
               </button>
             </form>
           </div>
           <div
-            className="col-8 shadow-lg p-3 my-5 bg-body rounded"
+            className="col-8 shadow-lg p-3 my-5 bg-body rounded overflow-hidden overflow-scroll "
             style={{ alignContent: "center", height: "70vh" }}
           >
             <h3 style={{ margin: "5px" }}>Income List</h3>

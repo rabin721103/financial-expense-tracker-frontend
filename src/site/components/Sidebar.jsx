@@ -1,8 +1,27 @@
 import { Input, Label } from "reactstrap";
 import "./Sidebar.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 function Sidebar() {
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("auth")));
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    const confirmLogout = window.confirm("Do you want to logout?");
+    if (confirmLogout) {
+      localStorage.removeItem("auth");
+      // Set isAuthenticated to false
+      setUser(null);
+      // Navigate to the home page or login page
+      navigate("/login");
+    }
+  };
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("auth")));
+    //eslint-disable-next-line
+  }, [localStorage.getItem("auth")]);
   return (
     <>
       <Input type="checkbox" id="check" />
@@ -38,10 +57,16 @@ function Sidebar() {
               <i className="fa fa-cogs"></i>Category
             </Link>
           </li>
+          <li>
+            <Link to="/profile">
+              <i className="fa-sharp fa-solid fa-user"></i>
+              Profile
+            </Link>
+          </li>
 
           <li>
-            <Link href="#">
-              <i className="far fa-envelope"></i>Contact
+            <Link onClick={handleLogout}>
+              <i className="fa-solid fa-right-from-bracket"></i>Logout
             </Link>
           </li>
         </ul>
