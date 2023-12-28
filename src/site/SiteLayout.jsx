@@ -3,11 +3,12 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Toast from "./Toastify/Toast";
 
-const SiteLayout = () => {
+const SiteLayout = ({ user, setUser }) => {
   return (
-    <div>
+    <div className="p-0">
       <Toast />
-      <Sidebar />
+      {user && <Sidebar setUser={setUser} />}
+
       <Outlet />
     </div>
   );

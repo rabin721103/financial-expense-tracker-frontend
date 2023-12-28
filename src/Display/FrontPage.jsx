@@ -1,132 +1,121 @@
+import { useEffect, useState } from "react";
+import axiosInstance from "../../axiosInstance";
+import { Card, Col, Row, Container } from "reactstrap";
+import ExpensePieChart from "../Charts/ExpensePieChart";
+import IncomePieChart from "../Charts/IncomePieChart";
+import { useQuery } from "@tanstack/react-query";
+import { getTotalExpense, getTotalIncome } from "../services/starWarsCharater";
+import IncomeBarChart from "../Charts/IncomeBarChart";
+import ExpenseBarChart from "../Charts/ExpenseBarChart";
+import { Balance } from "../HelperFunctions/BalanceCheck";
+
 function FrontPage() {
+  const income = useQuery({
+    queryKey: ["getTotalIncome"],
+    queryFn: () => getTotalIncome(),
+  });
+
+  const expense = useQuery({
+    queryKey: ["getTotalExpense"],
+    queryFn: () => getTotalExpense(),
+  });
+
+  const [chartsLoaded, setChartsLoaded] = useState(false);
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const [expenseData, setExpenseData] = useState("");
+  const [incomeData, setIncomeData] = useState("");
+
+  const getData = async () => {
+    const expenseRes = await axiosInstance.get("expenses/expenseData");
+    setExpenseData(expenseRes?.data?.response);
+
+    const incomeRes = await axiosInstance.get("incomes/incomeData");
+    setIncomeData(incomeRes?.data?.response);
+  };
+  useEffect(() => {
+    if (!window.google.visualization) {
+      window.google.charts.load("current", { packages: ["corechart"] });
+    }
+    window.google.charts.setOnLoadCallback(() => {
+      setChartsLoaded(true);
+    });
+
+    getData();
+  }, []);
+
+  const balance = Balance();
+
   return (
     <>
       <div className="container">
         <div className="row">
-          <div className="col-sm-4 col-md-6">
-            My name is Rabin KC
-            {/* <form className="p-3 shadow  my-4 bg-body rounded">
-              <h3 style={{ textAlign: "center" }}>Add Wallet</h3>
-              <div className="form-floating mb-3 mt-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="floatingInput"
-                  placeholder="Title"
-                />
-                <label htmlFor="floatingInput">Wallet Name</label>
-              </div>
-              <div className="form-floating mb-3">
-                <input
-                  type="money"
-                  className="form-control"
-                  id="floatingInput"
-                  placeholder="Amount"
-                />
-                <label htmlFor="floatingInput">Amount</label>
-              </div>
-              <button type="button" className="btn btn-primary">
-                Add Wallet
-              </button>
-            </form> */}
-          </div>
-          <div className="col-sm-4 offset-sm-2 col-md-6 offset-md-0">
-            <h3 style={{ margin: "5px" }}>Recent transactions</h3>
+          <div className="container">
+            <h2>
+              <b>Hello {user?.userName} !!!</b>
+            </h2>
+            <p>Here is your Financial Insights</p>
             <div
-              className="card shadow-lg my-2 bg-body rounded"
-              style={{ width: "100%" }}
+              style={{
+                display: "flex",
+                flexWrap: "nowrap",
+              }}
             >
-              <div
-                className="card-body"
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  color: "green",
-                }}
-              >
-                <h5 className="card-title">Monthly Salary</h5>
-                <p className="card-text">Salary</p>
-                <span className="label success">Income</span>
+              <div className="col-md-4 shadow-lg p-2 my-5 mx-3 bg-body rounded">
+                <button
+                  className="btn btn-outline-secondary"
+                  style={{ width: "100%" }}
+                >
+                  <i className="fa fa-sack-dollar"></i>
+                  Total Income:
+                  <h5>Rs. {income?.data?.data?.response}</h5>
+                </button>
               </div>
-              <div
-                className="card-body"
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  color: "green",
-                }}
-              >
-                <p className="card-text">Salary of December</p>
-                <h5 className="card-title">Rs. 40000</h5>
+              <div className="col-md-3 shadow-lg p-2 my-5 mx-3 bg-body rounded">
+                <button
+                  className="btn btn-outline-secondary"
+                  style={{ width: "100%" }}
+                >
+                  <i className="fa fa-sack-dollar "></i>
+                  Total Expense:
+                  <h5>Rs. {expense?.data?.data?.response}</h5>
+                </button>
               </div>
-            </div>
-            <div
-              className="card shadow-lg my-2 bg-body rounded"
-              style={{ width: "100%" }}
-            >
-              <div
-                className="card-body"
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  color: "red",
-                }}
-              >
-                <h5 className="card-title">Groceries</h5>
-                <p className="card-text">Grocery</p>
-                <span className="label success">Expense</span>
-              </div>
-              <div
-                className="card-body"
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  color: "red",
-                }}
-              >
-                <p className="card-text">Bought groceries for january</p>
-                <h5 className="card-title">Rs. 6510</h5>
+              <div className="col-md-3 shadow-lg p-2 my-5 bg-body rounded">
+                <button
+                  className="btn btn-outline-secondary"
+                  style={{ width: "100%" }}
+                >
+                  <i className="fa fa-sack-dollar "></i>
+                  Available Balance
+                  <h5>Rs. {balance}</h5>
+                </button>
               </div>
             </div>
           </div>
-        </div>
-        <div className="container">
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "nowrap",
-            }}
-          >
-            <div className="col-md-3 shadow-lg p-2 my-5 mx-3 bg-body rounded">
-              <button
-                className="btn btn-outline-secondary"
-                style={{ width: "100%" }}
-              >
-                <i className="fa fa-sack-dollar"></i>
-                Total Income:
-                <h5>Rs. 2,00,000</h5>
-              </button>
-            </div>
-            <div className="col-md-3 shadow-lg p-2 my-5 mx-3 bg-body rounded">
-              <button
-                className="btn btn-outline-secondary"
-                style={{ width: "100%" }}
-              >
-                <i className="fa fa-sack-dollar "></i>
-                Total Balance:
-                <h5>Rs. 50,000</h5>
-              </button>
-            </div>
-            <div className="col-md-3 shadow-lg p-2 my-5 bg-body rounded">
-              <button
-                className="btn btn-outline-secondary"
-                style={{ width: "100%" }}
-              >
-                <i className="fa fa-sack-dollar "></i>
-                Available Balance
-                <h5>Rs. 1,50,000</h5>
-              </button>
-            </div>
+          <div className="col-sm-8 col-md-12">
+            {chartsLoaded && (
+              <>
+                <Container>
+                  <Row>
+                    <Col>
+                      <Card>
+                        <ExpensePieChart expenseData={expenseData} />
+                      </Card>
+                    </Col>
+                    <Col>
+                      <Card>
+                        <IncomePieChart incomeData={incomeData} />
+                      </Card>
+                    </Col>
+                  </Row>
+                </Container>
+                <hr className="bg-info border-3 border-top border-secondary" />
+                <IncomeBarChart incomeData={incomeData} />
+                <hr className="bg-info border-3 border-top border-secondary" />
+                <ExpenseBarChart expenseData={expenseData} />
+              </>
+            )}
           </div>
         </div>
       </div>

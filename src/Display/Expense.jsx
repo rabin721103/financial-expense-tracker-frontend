@@ -5,6 +5,7 @@ import {
   emitErrorToast,
   emitSuccessToast,
 } from "../site/Toastify/ToastEmitter";
+import { Balance } from "../HelperFunctions/BalanceCheck";
 
 function Expense() {
   const initial = {
@@ -61,6 +62,9 @@ function Expense() {
     getCategories();
     getExpenses();
   }, []);
+
+  const balance = Balance();
+
   return (
     <>
       <div className="container">
@@ -75,8 +79,8 @@ function Expense() {
             style={{ width: "17%" }}
           >
             <i className="fa fa-sack-dollar fa-flip"></i>
-            Current Balance:
-            <h5>Rs. 2,13,000</h5>
+            Available Balance:
+            <h5>Rs. {balance}</h5>
           </button>
         </div>
         <div className="row">

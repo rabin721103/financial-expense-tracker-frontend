@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 import { useState } from "react";
 import axiosInstance from "../../../axiosInstance";
-const Login = () => {
+const Login = ({ setUser }) => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
 
@@ -11,7 +11,12 @@ const Login = () => {
   const getProfile = async () => {
     try {
       const response = await axiosInstance.get("/user/profile");
-      localStorage.setItem("user", JSON.stringify(response?.data ?? ""));
+      localStorage.setItem(
+        "user",
+        JSON.stringify(response?.data?.response ?? "")
+      );
+      setUser(response?.data?.response);
+      navigate("/frontpage");
     } catch (error) {
       console.log(error);
     }
@@ -22,12 +27,10 @@ const Login = () => {
         userName: userName.trim(),
         password: password.trim(),
       });
-      console.log(response);
       const token = response?.data?.token;
       if (token) {
         // localStorage.setItem("token", response?.response);
         getProfile();
-        navigate("/frontpage");
       }
     } catch (error) {
       console.log(error);

@@ -8,18 +8,5 @@ const axiosInstance = axios.create({
   },
   withCredentials: true,
 });
-// axiosInstance.interceptors.request.use(
-//   (config) => {
-//     const token = Cookies.get("auth") ?? "";
-//     console.log(token);
-//     if (token) {
-//       config.headers.Authorization = token;
-//     }
-//     return config;
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   }
-// );
 
 export default axiosInstance;

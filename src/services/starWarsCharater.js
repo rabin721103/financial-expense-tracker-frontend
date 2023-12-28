@@ -12,3 +12,10 @@ export const getStarWarsCharacterById = async (id) => {
 export const addStarWarsCharacter = async (data) => {
   return axiosInstance.post(`/people`, data);
 };
+
+export const getTotalIncome = async () => {
+  return axiosInstance.get("/incomes/totalIncome");
+};
+export const getTotalExpense = async () => {
+  return axiosInstance.get("/expenses/totalExpense");
+};

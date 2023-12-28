@@ -5,6 +5,9 @@ import {
   emitErrorToast,
   emitSuccessToast,
 } from "../site/Toastify/ToastEmitter";
+import { Button } from "reactstrap";
+import { excelGenerator } from "../HelperFunctions/ExportHelper";
+import { Balance } from "../HelperFunctions/BalanceCheck.js";
 
 function Income() {
   const initial = {
@@ -58,6 +61,25 @@ function Income() {
     getIncomes();
   }, []);
 
+  const handleExport = async () => {
+    const incResponse = await axiosInstance.get("/incomes/allIncomes");
+    const data = incResponse?.data?.response;
+
+    if (incResponse?.data?.success) {
+      const columns = [
+        "incomeId",
+        "incomeName",
+        "incomeCategoryName",
+        "incomeCategoryId",
+        "date",
+        "description",
+        "incomeAmount",
+      ];
+      excelGenerator("Transactions", "transactions", columns, data);
+    }
+  };
+  const balance = Balance();
+
   return (
     <>
       <div className="container">
@@ -67,13 +89,21 @@ function Income() {
               <i className="fas fa-arrow-left mr-2"></i>Go Back
             </button>
           </Link>
+          <Button
+            className="bg-muted ms-5"
+            type="button"
+            onClick={handleExport}
+          >
+            Export
+            <i className="fa-solid fa-download"></i>
+          </Button>
           <button
             className="btn btn-outline-secondary"
             style={{ width: "17%" }}
           >
             <i className="fa fa-sack-dollar fa-flip"></i>
-            Current Balance:
-            <h5>Rs. 2,00,000</h5>
+            Available Balance:
+            <h5>Rs. {balance}</h5>
           </button>
         </div>
         <div className="row">
