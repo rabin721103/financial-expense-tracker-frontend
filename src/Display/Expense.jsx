@@ -6,6 +6,7 @@ import {
   emitSuccessToast,
 } from "../site/Toastify/ToastEmitter";
 import { Balance } from "../HelperFunctions/BalanceCheck";
+import { excelGenerator } from "../HelperFunctions/ExportHelper";
 
 function Expense() {
   const initial = {
@@ -63,6 +64,24 @@ function Expense() {
     getExpenses();
   }, []);
 
+  const handleExpenseExport = async () => {
+    const expResponse = await axiosInstance.get("/expenses/allExpenses");
+    const data = expResponse?.data?.response;
+
+    if (expResponse?.data?.success) {
+      const columns = [
+        "expenseId",
+        "expenseName",
+        "expenseCategoryName",
+        "expenseCategoryId",
+        "date",
+        "description",
+        "expenseAmount",
+      ];
+      excelGenerator("Transactions", "transactions", columns, data);
+    }
+  };
+
   const balance = Balance();
 
   return (
@@ -74,6 +93,15 @@ function Expense() {
               <i className="fas fa-arrow-left mr-2"></i>Go Back
             </button>
           </Link>
+          <button
+            className="btn btn-outline-secondary"
+            style={{ width: "10%", height: "16%" }}
+            type="button"
+            onClick={handleExpenseExport}
+          >
+            Export
+            <i className="fa-solid fa-download"></i>
+          </button>
           <button
             className="btn btn-outline-secondary"
             style={{ width: "17%" }}

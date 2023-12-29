@@ -89,14 +89,15 @@ function Income() {
               <i className="fas fa-arrow-left mr-2"></i>Go Back
             </button>
           </Link>
-          <Button
-            className="bg-muted ms-5"
+          <button
+            className="btn btn-outline-secondary"
+            style={{ width: "10%", height: "16%" }}
             type="button"
             onClick={handleExport}
           >
             Export
             <i className="fa-solid fa-download"></i>
-          </Button>
+          </button>
           <button
             className="btn btn-outline-secondary"
             style={{ width: "17%" }}
@@ -204,7 +205,9 @@ function Income() {
                   <p className="card-text">{income?.description}</p>
                   <h5 className="card-title">{income?.incomeAmount}</h5>
 
-                  <button className="btn btn-danger">Delete</button>
+                  <button className="btn btn-danger" disabled>
+                    Delete
+                  </button>
                 </div>
               </div>
             ))}
