@@ -2,6 +2,8 @@ import { Link, useNavigate } from "react-router-dom";
 import "../Login/Login.css";
 import { useState } from "react";
 import axiosInstance from "../../../axiosInstance";
+import { emitSuccessToast } from "../Toastify/ToastEmitter";
+
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -11,24 +13,56 @@ const Register = () => {
     profession: "",
   });
 
+  const [errors, setErrors] = useState({});
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.userName.trim()) {
+      newErrors.userName = "Username is required";
+    }
+
+    if (!formData.password.trim()) {
+      newErrors.password = "Password is required";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Invalid email address";
+    }
+
+    if (!formData.profession.trim()) {
+      newErrors.profession = "Profession is required";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axiosInstance.post("/auth/register", formData);
-      console.log(response?.data?.message);
-      navigate("/login");
-    } catch (error) {
-      console.error("Registration failed", error);
-      // Handle error, show a message to the user, etc.
+    if (validateForm()) {
+      try {
+        const response = await axiosInstance.post("/auth/register", formData);
+        const msg = response?.data?.message;
+        emitSuccessToast(msg);
+
+        navigate("/login");
+      } catch (error) {
+        console.error("Registration failed", error);
+        // Handle error, show a message to the user, etc.
+      }
     }
   };
   return (
     <>
-      <div className="container">
+      <div className="container mt-5">
         <div className="row">
           <div className="col-md-11 mt-60 mx-md-auto">
             <div className="login-box bg-white pl-lg-5 pl-0">
@@ -55,6 +89,9 @@ const Register = () => {
                               onChange={handleChange}
                             />
                           </div>
+                          <div className="col-12 text-danger mb-1">
+                            {errors.userName && <p>{errors.userName}</p>}
+                          </div>
                         </div>
                         <div className="col-12">
                           <div className="form-group position-relative my-3">
@@ -67,6 +104,9 @@ const Register = () => {
                               value={formData.password}
                               onChange={handleChange}
                             />
+                          </div>
+                          <div className="col-12 text-danger mb-1">
+                            {errors.password && <p>{errors.password}</p>}
                           </div>
                         </div>
                         <div className="col-12">
@@ -81,6 +121,9 @@ const Register = () => {
                               onChange={handleChange}
                             />
                           </div>
+                          <div className="col-12 text-danger mb-1">
+                            {errors.profession && <p>{errors.profession}</p>}
+                          </div>
                         </div>
                         <div className="col-12">
                           <div className="form-group position-relative my-3">
@@ -93,6 +136,9 @@ const Register = () => {
                               value={formData.email}
                               onChange={handleChange}
                             />
+                          </div>
+                          <div className="col-12 text-danger mb-3">
+                            {errors.email && <p>{errors.email}</p>}
                           </div>
                         </div>
 
@@ -113,7 +159,7 @@ const Register = () => {
                   <div className="content text-center">
                     <div className="border-bottom pb-5 mb-5">
                       <h3 className="c-black">Already Have Account</h3>
-                      <Link to="/login" className="btn btn-custom">
+                      <Link to="/login" className="btn btn-secondary">
                         Login Here
                       </Link>
                     </div>

@@ -64,7 +64,7 @@ const HomePage = ({ user }) => {
                   <>
                     <div>
                       <h1>Welcome to Financial Tracker</h1>
-                      <button className="btn btn-outline-success">
+                      <button className="btn btn-outline-primary">
                         <Link to="/frontpage">User Dashboard</Link>
                       </button>
                     </div>

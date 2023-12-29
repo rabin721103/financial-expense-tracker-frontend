@@ -52,7 +52,8 @@ function FrontPage() {
         <div className="row">
           <div className="container">
             <h2>
-              <b>Hello {user?.userName} !!!</b>
+              <b>Hello </b>
+              <b className="text-uppercase">{user?.userName}</b> !!!
             </h2>
             <p>Here is your Financial Insights</p>
             <div

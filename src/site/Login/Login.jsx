@@ -6,6 +6,8 @@ const Login = ({ setUser }) => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
 
+  const [error, setError] = useState("");
+
   const navigate = useNavigate();
 
   const getProfile = async () => {
@@ -22,6 +24,10 @@ const Login = ({ setUser }) => {
     }
   };
   const handleClick = async () => {
+    if (!userName.trim() || !password.trim()) {
+      setError("Username and password are required");
+      return;
+    }
     try {
       const response = await axiosInstance.post("/auth/login", {
         userName: userName.trim(),
@@ -33,12 +39,13 @@ const Login = ({ setUser }) => {
         getProfile();
       }
     } catch (error) {
+      setError("Invalid username or password");
       console.log(error);
     }
   };
   return (
     <>
-      <div className="container">
+      <div className="container mt-5">
         <div className="row">
           <div className="col-md-11 mt-60 mx-md-auto">
             <div className="login-box bg-white pl-lg-5 pl-0">
@@ -48,7 +55,7 @@ const Login = ({ setUser }) => {
                     <h4 className="btm-sep pb-3 mb-5">Login</h4>
                     <form className="form" action="" method="POST">
                       <div className="row">
-                        <div className="col-12">
+                        <div className="col-12 ">
                           <div className="form-group position-relative my-3">
                             <span className="zmdi zmdi-account"></span>
                             <input
@@ -58,6 +65,7 @@ const Login = ({ setUser }) => {
                               placeholder="Username"
                               value={userName}
                               onChange={(e) => setUserName(e.target.value)}
+                              required
                             />
                           </div>
                         </div>
@@ -71,9 +79,11 @@ const Login = ({ setUser }) => {
                               placeholder="Password"
                               value={password}
                               onChange={(e) => setPassword(e.target.value)}
+                              required
                             />
                           </div>
                         </div>
+                        <div className="col-12 text-danger mb-3">{error}</div>
                         <div className="col-12 text-lg-right my-3">
                           <a href="#" className="c-black">
                             Forgot password ?
@@ -97,7 +107,7 @@ const Login = ({ setUser }) => {
                   <div className="content text-center">
                     <div className="border-bottom pb-5 mb-5">
                       <h3 className="c-black">First time here?</h3>
-                      <Link to="/register" className="btn btn-custom">
+                      <Link to="/register" className="btn btn-secondary">
                         Sign up
                       </Link>
                     </div>
